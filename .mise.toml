@@ -1,0 +1,7 @@
+env_path = ['./node_modules/.bin']
+
+[env]
+mise.file = ['./.env.local']
+
+[tools]
+node = '18.19.0'
