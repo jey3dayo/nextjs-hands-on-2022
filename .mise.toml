@@ -4,4 +4,4 @@ env_path = ['./node_modules/.bin']
 mise.file = ['./.env.local']
 
 [tools]
-node = '18.19.0'
+node = '20'

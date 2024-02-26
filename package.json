@@ -2,7 +2,7 @@
   "name": "nextjs-handson",
   "private": true,
   "engines": {
-    "node": ">=16.0.0 =<18.x.x"
+    "node": ">=18.0.0 =<20.x.x"
   },
   "scripts": {
     "dev": "next dev",
