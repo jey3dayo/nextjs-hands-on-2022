@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import getConfig from 'next/config';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -12,15 +11,31 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 
-const fetchData = async (keyword) => {
-  const { API_HOST } = getConfig().publicRuntimeConfig;
+function getDomain() {
+  const environment = process.env.NEXT_PUBLIC_VERCEL_ENV;
+  const isProduction = environment === 'production';
+  const isStaging = environment === 'staging';
+  const protocol = isProduction || isStaging ? 'https' : 'http';
+  const domain = process.env.NEXT_PUBLIC_VERCEL_URL ? process.env.NEXT_PUBLIC_VERCEL_URL : 'localhost:3000';
+  return `${protocol}://${domain}`;
+}
 
-  const query = new URLSearchParams();
-  if (keyword) query.set('keyword', keyword);
+const fetchData = async (keyword, host = '') => {
+  const url = new URL(`${host}/api/shops`);
+  if (keyword) url.searchParams.append('keyword', keyword);
 
-  const host = process.browser ? '' : API_HOST;
-  const res = await fetch(`${host}/api/shops?${query.toString()}`);
-  return await res.json();
+  try {
+    const response = await fetch(url);
+    if (response.ok) {
+      return await response.json();
+    }
+
+    throw new Error(`Network response was not ok.`);
+  } catch (e) {
+    /* handle error */
+    console.error(e);
+    return [];
+  }
 };
 
 const Shops = ({ firstViewShops }) => {
@@ -116,7 +131,8 @@ const Shops = ({ firstViewShops }) => {
 };
 
 export const getServerSideProps = async (req) => {
-  const data = await fetchData(req.query.keyword);
+  const host = getDomain();
+  const data = await fetchData(req.query.keyword, host);
 
   return {
     props: {
